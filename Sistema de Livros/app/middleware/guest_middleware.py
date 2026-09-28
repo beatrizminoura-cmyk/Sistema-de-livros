@@ -8,7 +8,7 @@ def guest_only(view):
     @wraps(view)
     def wrapped_view(*args, **kwargs):
 
-        if "usuario" in session:
+        if "usuario_id" in session:
             return redirect(url_for("main.home"))
 
         return view(*args, **kwargs)
