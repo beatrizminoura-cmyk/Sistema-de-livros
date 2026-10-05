@@ -6,77 +6,148 @@ from werkzeug.security import (
 from app.database import ConnectionManager
 
 
-def buscar_por_email(email):
+class Usuario:
 
-    conn = ConnectionManager.conectar()
-    cursor = conn.cursor()
+    def __init__(
+        self,
+        nome,
+        email,
+        senha,
+        id=None,
+        senha_hash=False
+    ):
+        self.id = id
+        self.nome = nome
+        self.email = email
+        self.senha = senha
+        self.senha_hash = senha_hash
 
-    cursor.execute(
-        """
-        SELECT id, nome, email, senha
-        FROM usuarios
-        WHERE email = ?
-        """,
-        (email,)
-    )
+    def salvar(self):
 
-    usuario = cursor.fetchone()
+        with ConnectionManager() as conn:
 
-    ConnectionManager.fechar(conn)
+            cursor = conn.cursor()
 
-    return usuario
+            if self.id is None:
 
+                senha_hash = generate_password_hash(self.senha)
 
-def autenticar(email, senha):
+                cursor.execute(
+                    """
+                    INSERT INTO usuarios
+                    (nome, email, senha)
+                    VALUES (?, ?, ?)
+                    """,
+                    (
+                        self.nome,
+                        self.email,
+                        senha_hash
+                    )
+                )
 
-    usuario = buscar_por_email(email)
+                self.id = cursor.lastrowid
+                self.senha = senha_hash
+                self.senha_hash = True
 
-    if usuario is None:
+            else:
+
+                senha = self.senha
+
+                if not self.senha_hash:
+                    senha = generate_password_hash(senha)
+                    self.senha = senha
+                    self.senha_hash = True
+
+                cursor.execute(
+                    """
+                    UPDATE usuarios
+                    SET nome = ?,
+                        email = ?,
+                        senha = ?
+                    WHERE id = ?
+                    """,
+                    (
+                        self.nome,
+                        self.email,
+                        senha,
+                        self.id
+                    )
+                )
+
+    def verificar_senha(self, senha):
+
+        return check_password_hash(
+            self.senha,
+            senha
+        )
+
+    @classmethod
+    def buscar_por_id(cls, id_usuario):
+
+        with ConnectionManager() as conn:
+
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                SELECT id, nome, email, senha
+                FROM usuarios
+                WHERE id = ?
+                """,
+                (id_usuario,)
+            )
+
+            registro = cursor.fetchone()
+
+            if registro is None:
+                return None
+
+            return cls(
+                id=registro["id"],
+                nome=registro["nome"],
+                email=registro["email"],
+                senha=registro["senha"],
+                senha_hash=True
+            )
+
+    @classmethod
+    def buscar_por_email(cls, email):
+
+        with ConnectionManager() as conn:
+
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                SELECT id, nome, email, senha
+                FROM usuarios
+                WHERE email = ?
+                """,
+                (email,)
+            )
+
+            registro = cursor.fetchone()
+
+            if registro is None:
+                return None
+
+            return cls(
+                id=registro["id"],
+                nome=registro["nome"],
+                email=registro["email"],
+                senha=registro["senha"],
+                senha_hash=True
+            )
+
+    @classmethod
+    def autenticar(cls, email, senha):
+
+        usuario = cls.buscar_por_email(email)
+
+        if usuario is None:
+            return None
+
+        if usuario.verificar_senha(senha):
+            return usuario
+
         return None
-
-    if check_password_hash(usuario["senha"], senha):
-        return usuario
-
-    return None
-
-
-def criar_usuario(nome, email, senha):
-
-    conn = ConnectionManager.conectar()
-    cursor = conn.cursor()
-
-    senha_hash = generate_password_hash(senha)
-
-    cursor.execute(
-        """
-        INSERT INTO usuarios
-        (nome, email, senha)
-        VALUES (?, ?, ?)
-        """,
-        (nome, email, senha_hash)
-    )
-
-    conn.commit()
-
-    ConnectionManager.fechar(conn)
-
-
-def buscar_por_id(id_usuario):
-
-    conn = ConnectionManager.conectar()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        SELECT id, nome, email
-        FROM usuarios
-        WHERE id = ?
-        """,
-        (id_usuario,)
-    )
-
-    usuario = cursor.fetchone()
-
-    ConnectionManager.fechar(conn)
-
-    return usuario

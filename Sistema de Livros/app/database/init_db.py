@@ -1,17 +1,34 @@
-from pathlib import Path
+import os
 
 from app.database import ConnectionManager
 
 
+BASE_DIR = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "..",
+        ".."
+    )
+)
+
+
 def inicializar_banco():
 
-    conn = ConnectionManager.conectar()
+    caminho_schema = os.path.join(
+        BASE_DIR,
+        "database",
+        "schema.sql"
+    )
 
-    cursor = conn.cursor()
+    with ConnectionManager() as conn:
 
-    with open("database/schema.sql", encoding="utf-8") as arquivo:
-        cursor.executescript(arquivo.read())
+        cursor = conn.cursor()
 
-    conn.commit()
+        with open(
+            caminho_schema,
+            encoding="utf-8"
+        ) as arquivo:
 
-    ConnectionManager.fechar(conn)
+            script = arquivo.read()
+
+        cursor.executescript(script)

@@ -1,16 +1,32 @@
 from app.database.init_db import inicializar_banco
-from app.models import buscar_por_email, criar_usuario
+from app.models import Livro
 
-# Cria as tabelas
+
 inicializar_banco()
 
-# Insere usuário de teste apenas se não existir
-if not buscar_por_email("beatriz@email.com"):
-    criar_usuario(
-        "Beatriz",
-        "beatriz@email.com",
-        "12345"
+
+livros = [
+    Livro(
+        titulo="O Hobbit",
+        autor="J. R. R. Tolkien"
+    ),
+
+    Livro(
+        titulo="Harry Potter e a Pedra Filosofal",
+        autor="J. K. Rowling"
+    ),
+
+    Livro(
+        titulo="Orgulho e Preconceito",
+        autor="Jane Austen"
     )
-    print("Usuário criado.")
-else:
-    print("Usuário já existe.")
+]
+
+
+for livro in livros:
+
+    livro.salvar()
+
+    print(
+        f"Livro cadastrado: {livro.titulo}"
+    )

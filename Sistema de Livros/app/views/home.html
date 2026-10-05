@@ -2,28 +2,55 @@
 <html lang="pt-br">
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Início</title>
+
+    <title>Meus Livros</title>
 
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}"
     >
+
 </head>
 
 <body>
 
     <div class="container">
 
-        <h1>Bem-vindo!</h1>
-
-        <p>
+        <h1>
             Olá, {{ session["usuario_nome"] }}!
-        </p>
+        </h1>
 
-        <p>
-            Sistema de recomendações e avaliações de livros.
-        </p>
+        <h2>Meus livros</h2>
+
+        {% if livros %}
+
+            <ul>
+
+                {% for livro in livros %}
+
+                    <li>
+                        <strong>
+                            {{ livro.titulo }}
+                        </strong>
+
+                        <span>
+                            — {{ livro.autor }}
+                        </span>
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+
+        {% else %}
+
+            <p>
+                Nenhum livro cadastrado.
+            </p>
+
+        {% endif %}
 
         <a href="{{ url_for('auth.logout') }}">
             Sair

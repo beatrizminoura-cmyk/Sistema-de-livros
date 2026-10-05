@@ -1,7 +1,11 @@
 from flask import Flask
 
 from config import Config
-from app.controllers import auth_bp, main_bp
+
+from app.controllers import (
+    auth_bp,
+    main_bp
+)
 
 
 def create_app():
@@ -13,7 +17,6 @@ def create_app():
     )
 
     app.config.from_object(Config)
-
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)

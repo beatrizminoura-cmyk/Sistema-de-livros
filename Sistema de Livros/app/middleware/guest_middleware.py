@@ -1,6 +1,10 @@
 from functools import wraps
 
-from flask import session, redirect, url_for
+from flask import (
+    session,
+    redirect,
+    url_for
+)
 
 
 def guest_only(view):
@@ -9,8 +13,14 @@ def guest_only(view):
     def wrapped_view(*args, **kwargs):
 
         if "usuario_id" in session:
-            return redirect(url_for("main.home"))
 
-        return view(*args, **kwargs)
+            return redirect(
+                url_for("main.home")
+            )
+
+        return view(
+            *args,
+            **kwargs
+        )
 
     return wrapped_view

@@ -1,2 +1,2 @@
-from app.middleware.auth_middleware import login_required
-from app.middleware.guest_middleware import guest_only
+from .auth_middleware import login_required
+from .guest_middleware import guest_only

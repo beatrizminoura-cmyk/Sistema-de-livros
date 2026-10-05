@@ -7,7 +7,7 @@ from flask import (
     url_for
 )
 
-from app.models import autenticar
+from app.models import Usuario
 from app.middleware import guest_only, login_required
 
 
@@ -23,16 +23,21 @@ def login():
         email = request.form["email"]
         senha = request.form["senha"]
 
-        usuario = autenticar(email, senha)
+        usuario = Usuario.autenticar(
+            email,
+            senha
+        )
 
         if usuario:
 
             session.clear()
 
-            session["usuario_id"] = usuario["id"]
-            session["usuario_nome"] = usuario["nome"]
+            session["usuario_id"] = usuario.id
+            session["usuario_nome"] = usuario.nome
 
-            return redirect(url_for("main.home"))
+            return redirect(
+                url_for("main.home")
+            )
 
         return render_template(
             "login.html",
@@ -48,4 +53,6 @@ def logout():
 
     session.clear()
 
-    return redirect(url_for("auth.login"))
+    return redirect(
+        url_for("auth.login")
+    )

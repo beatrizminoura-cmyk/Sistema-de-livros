@@ -1,5 +1,2 @@
-from .usuario import (
-    autenticar,
-    buscar_por_email,
-    criar_usuario
-)
+from .usuario import Usuario
+from .livro import Livro
