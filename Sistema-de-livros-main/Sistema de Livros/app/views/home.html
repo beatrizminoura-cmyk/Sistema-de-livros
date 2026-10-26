@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Livros</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="app-header">
+            <div class="user-greeting">
+                <span class="header-icon" aria-hidden="true">▤</span>
+                <div>
+                    <h1>Meus livros</h1>
+                    <p class="header-subtitle">Seu cantinho de leitura</p>
+                </div>
+            </div>
+
+            <a href="{{ url_for('auth.logout') }}"
+               class="btn-logout">
+                <span aria-hidden="true">↪</span>
+                Sair
+            </a>
+        </header>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                <div class="flash-messages">
+                    {% for categoria, mensagem in mensagens %}
+                        <div class="alert {{ categoria }}">
+                            <span aria-hidden="true">●</span>
+                            <span>{{ mensagem }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="welcome-message">
+            <h2>Olá, {{ session["usuario_nome"] }}!</h2>
+            <p>Um bom livro, um momento tranquilo.</p>
+        </div>
+
+        <main class="content-grid">
+
+            <section class="card">
+                <div class="card-header">
+                    <span class="section-icon" aria-hidden="true">＋</span>
+                    <div>
+                        <h2>Adicionar um livro</h2>
+                        <p>Registre sua próxima leitura.</p>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('main.cadastrar_livro') }}"
+                      method="POST"
+                      class="book-form">
+
+                    <div class="form-group">
+                        <label for="titulo">Título do livro</label>
+                        <input type="text"
+                               id="titulo"
+                               name="titulo"
+                               placeholder="Ex.: O Hobbit"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="autor">Autor</label>
+                        <input type="text"
+                               id="autor"
+                               name="autor"
+                               placeholder="Ex.: J. R. R. Tolkien"
+                               required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        ＋ Cadastrar livro
+                    </button>
+                </form>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <span class="section-icon" aria-hidden="true">▤</span>
+                    <div>
+                        <h2>Minha estante</h2>
+                        <p>Os livros que fazem parte da sua história.</p>
+                    </div>
+                </div>
+
+                {% if livros %}
+                    <ul class="book-list">
+                        {% for livro in livros %}
+                            <li class="book-item">
+                                <div class="book-icon"
+                                     aria-hidden="true">▤</div>
+
+                                <div class="book-info">
+                                    <strong class="book-title">
+                                        {{ livro.titulo }}
+                                    </strong>
+                                    <span class="book-author">
+                                        {{ livro.autor }}
+                                    </span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">
+                        <span class="empty-icon"
+                              aria-hidden="true">♡</span>
+                        <h3>Sua estante está esperando!</h3>
+                        <p>Cadastre seu primeiro livro para começar.</p>
+                    </div>
+                {% endif %}
+            </section>
+
+        </main>
+
+        <footer class="page-footer">
+            Feito para guardar boas histórias.
+        </footer>
+
+    </div>
+
+</body>
+</html>
