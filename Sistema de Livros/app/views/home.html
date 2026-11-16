@@ -1,0 +1,127 @@
+
+{% extends 'base.html' %}
+{% block title %}Meus Livros{% endblock %}
+{% block content %}
+
+
+
+    <div class="container">
+
+        <header class="app-header">
+            <div class="user-greeting">
+                <span class="header-icon" aria-hidden="true">▤</span>
+                <div>
+                    <h1>Meus livros</h1>
+                    <p class="header-subtitle">Seu cantinho de leitura</p>
+                </div>
+            </div>
+
+            <a href="{{ url_for('auth.logout') }}"
+               class="btn-logout">
+                <span aria-hidden="true">↪</span>
+                Sair
+            </a>
+        </header>
+
+
+
+        <div class="welcome-message">
+            <h2>Olá, {{ g.usuario.nome }}!</h2>
+            <p>Um bom livro, um momento tranquilo.</p>
+        </div>
+
+        <main class="content-grid">
+
+            <section class="card">
+                <div class="card-header">
+                    <span class="section-icon" aria-hidden="true">＋</span>
+                    <div>
+                        <h2>Adicionar um livro</h2>
+                        <p>Registre sua próxima leitura.</p>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('main.cadastrar_livro') }}"
+                      method="POST"
+                      class="book-form">
+
+                    <div class="form-group">
+                        <label for="titulo">Título do livro</label>
+                        <input type="text"
+                               id="titulo"
+                               name="titulo"
+                               placeholder="Ex.: O Hobbit"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="autor">Autor</label>
+                        <input type="text"
+                               id="autor"
+                               name="autor"
+                               placeholder="Ex.: J. R. R. Tolkien"
+                               required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        ＋ Cadastrar livro
+                    </button>
+                </form>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <span class="section-icon" aria-hidden="true">▤</span>
+                    <div>
+                        <h2>Minha estante</h2>
+                        <p>Os livros que fazem parte da sua história.</p>
+                    </div>
+                </div>
+
+                {% if livros %}
+                    <ul class="book-list">
+                        {% for livro in livros %}
+                            <li class="book-item">
+                                <div class="book-icon"
+                                     aria-hidden="true">▤</div>
+
+                                <div class="book-info">
+                                    <strong class="book-title">
+                                        {{ livro.titulo }}
+                                    </strong>
+                                    <span class="book-author">
+                                        {{ livro.autor }}
+                                    </span>
+                                </div>
+                                <form method="POST" action="{{ url_for('main.excluir_livro', id_livro=livro.id) }}"><button type="submit">Excluir</button></form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">
+                        <span class="empty-icon"
+                              aria-hidden="true">♡</span>
+                        <h3>Sua estante está esperando!</h3>
+                        <p>Cadastre seu primeiro livro para começar.</p>
+                    </div>
+                {% endif %}
+            </section>
+
+        </main>
+
+        <section class="card" style="margin-top:24px;">
+          <div class="card-header"><div><h2>Avaliações</h2><p>Registre sua opinião sobre os livros da sua estante.</p></div></div>
+          {% if livros %}<form method="POST" action="{{ url_for('main.cadastrar_avaliacao') }}" class="book-form">
+            <div class="form-group"><label>Livro</label><select name="livro_id" required>{% for livro in livros %}<option value="{{ livro.id }}">{{ livro.titulo }}</option>{% endfor %}</select></div>
+            <div class="form-group"><label>Nota</label><select name="nota" required><option value="">Selecione</option>{% for n in range(1,6) %}<option value="{{ n }}">{{ n }} / 5</option>{% endfor %}</select></div>
+            <div class="form-group"><label>Comentário</label><textarea name="comentario" maxlength="500" required></textarea></div><button class="btn-submit">Salvar avaliação</button>
+          </form>{% else %}<p>Cadastre um livro antes de avaliá-lo.</p>{% endif %}
+          <h3>Minhas avaliações</h3>{% for a in avaliacoes %}<div class="book-item"><div><strong>{{ a.titulo }} — {{ a.nota }}/5</strong><p>{{ a.comentario }}</p></div><form method="POST" action="{{ url_for('main.excluir_avaliacao', id_avaliacao=a.id) }}"><button>Excluir</button></form></div>{% else %}<p>Nenhuma avaliação cadastrada.</p>{% endfor %}
+        </section>
+        <footer class="page-footer">
+            Feito para guardar boas histórias.
+        </footer>
+
+    </div>
+
+{% endblock %}
