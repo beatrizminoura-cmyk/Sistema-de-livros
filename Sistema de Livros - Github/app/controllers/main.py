@@ -19,6 +19,46 @@ def cadastrar_livro():
         current_app.logger.info("Livro cadastrado pelo usuario_id=%s", session["usuario_id"])
     return redirect(url_for("main.home"))
 
+
+@main_bp.route("/livros/<int:id_livro>/editar", methods=["GET", "POST"])
+@login_required
+def editar_livro(id_livro):
+    usuario_id = session["usuario_id"]
+
+    # Busca o livro pertencente ao usuário
+    livro = Livro.buscar_por_id(id_livro, usuario_id)
+
+    if livro is None:
+        flash("Livro não encontrado.", "erro")
+        return redirect(url_for("main.home"))
+
+    if request.method == "POST":
+        titulo = request.form.get("titulo", "").strip()
+        autor = request.form.get("autor", "").strip()
+
+        # Validação dos dados
+        if not titulo or not autor or len(titulo) > 150 or len(autor) > 100:
+            flash("Informe título e autor (até 150 e 100 caracteres).", "erro")
+            return render_template("editar_livro.html", livro=livro)
+
+        # Atualização através do Model
+        livro.titulo = titulo
+        livro.autor = autor
+
+        if livro.atualizar():
+            flash("Livro atualizado com sucesso!", "success")
+            current_app.logger.info(
+                "Livro atualizado: livro_id=%s usuario_id=%s",
+                id_livro, usuario_id
+            )
+        else:
+            flash("Não foi possível atualizar o livro.", "erro")
+
+        return redirect(url_for("main.home"))
+
+    return render_template("editar_livro.html", livro=livro)
+
+
 @main_bp.route("/livros/<int:id_livro>/excluir", methods=["POST"])
 @login_required
 def excluir_livro(id_livro):

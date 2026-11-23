@@ -622,3 +622,65 @@ input:focus-visible {
         border-radius: 17px;
     }
 }
+
+
+/* Ações dos livros */
+.book-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.btn-edit,
+.btn-delete,
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 13px;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-edit {
+    color: var(--rosewood);
+    background: var(--dawn);
+    border: 1px solid var(--border);
+}
+
+.btn-edit:hover {
+    background: var(--peaches-cream);
+}
+
+.btn-delete {
+    color: var(--danger);
+    background: transparent;
+    border: 1px solid #E8CECC;
+}
+
+.btn-delete:hover {
+    background: #F7E4E1;
+}
+
+.edit-card {
+    max-width: 650px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.btn-cancel {
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    background: transparent;
+}
+
+.btn-cancel:hover {
+    color: var(--rosewood);
+    background: var(--dawn);
+}

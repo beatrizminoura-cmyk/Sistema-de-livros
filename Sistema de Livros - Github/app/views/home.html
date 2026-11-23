@@ -93,7 +93,23 @@
                                         {{ livro.autor }}
                                     </span>
                                 </div>
-                                <form method="POST" action="{{ url_for('main.excluir_livro', id_livro=livro.id) }}"><button type="submit">Excluir</button></form>
+
+                                <div class="book-actions">
+
+                                    <a href="{{ url_for('main.editar_livro', id_livro=livro.id) }}"
+                                    class="btn-edit">
+                                        Editar
+                                    </a>
+
+                                    <form method="POST"
+                                        action="{{ url_for('main.excluir_livro', id_livro=livro.id) }}"
+                                        onsubmit="return confirm('Deseja realmente excluir este livro?')">
+
+                                        <button type="submit" class="btn-delete">
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>

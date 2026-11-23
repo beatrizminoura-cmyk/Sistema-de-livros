@@ -34,6 +34,21 @@ class Livro:
                     (self.titulo, self.autor, self.id, self.usuario_id)
                 )
 
+    
+    def atualizar(self):
+        with ConnectionManager() as db:
+            db.cursor.execute(
+                """
+                UPDATE livros
+                SET titulo = ?, autor = ?
+                WHERE id = ? AND usuario_id = ?
+                """,
+                (self.titulo, self.autor, self.id, self.usuario_id)
+            )
+
+            return db.cursor.rowcount > 0
+
+
     @classmethod
     def buscar_por_id(cls, id_livro, usuario_id):
         with ConnectionManager() as db:
